@@ -14,7 +14,8 @@ DO $$BEGIN
             email character varying,
             dateadded date,
             contact character varying,
-            address character varying
+            address character varying,
+            dateadded date
         );
 
     END IF;
@@ -143,6 +144,7 @@ DO $$BEGIN
             remarks character varying,
             remarksredeem character varying,
             remarksrenew character varying,
+            remarkssold character varying,
             pledgedby integer,
             redeemedby integer,
             renewedby integer,

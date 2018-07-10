@@ -7,8 +7,8 @@
         path        = require("path"),
         bodyParser  = require("body-parser"),
         cons        = require("consolidate"),
-        dust        = require("dustjs-helpers"),
-        globe = require('globe-connect');
+        dust        = require("dustjs-helpers");
+        //globe = require('globe-connect');
     
     const cors = require('cors');
     const { Pool, Client } = require('pg');
@@ -79,15 +79,15 @@
         });
     }
 
-    app.get('/sms', function(req, res){
+    // app.get('/sms', function(req, res){
         
-        const oauth = globe.Oauth('ydzRhRExGEu67Te8RGixxzu8od4ahd8y', '16c71f40c2621c6bfd1285f05e848a6accace1f4f110b590fdff353574a3e217');
-        const sms = globe.Sms('21581199 (Cross-telco: 29290581199)', '[access_token]');
-        var url = oauth.getRedirectUrl();
+    //     const oauth = globe.Oauth('ydzRhRExGEu67Te8RGixxzu8od4ahd8y', '16c71f40c2621c6bfd1285f05e848a6accace1f4f110b590fdff353574a3e217');
+    //     const sms = globe.Sms('21581199 (Cross-telco: 29290581199)', '[access_token]');
+    //     var url = oauth.getRedirectUrl();
 
-        console.log(url);
+    //     console.log(url);
 
-    });
+    // });
 
 
     app.get('/encrypt/:password', function(req, res){
@@ -265,35 +265,36 @@
     app.get('/dashboard', function(req, res){
         
         const sql = `SELECT
-        CASE WHEN (SELECT SUM(amount) FROM funds WHERE type IN (1, 4)) IS NULL THEN 0
-        ELSE (SELECT SUM(amount) FROM funds WHERE type IN (1, 4)) END as deposit,
-        CASE WHEN (SELECT SUM(amount) FROM funds WHERE type IN (2, 3)) IS NULL THEN 0
-        ELSE (SELECT SUM(amount) FROM funds WHERE type IN (2, 3)) END as withdraw,
-        (CASE WHEN (SELECT SUM(amount) FROM funds WHERE type IN (1, 4)) IS NULL THEN 0
-        ELSE (SELECT SUM(amount) FROM funds WHERE type IN (1, 4)) END) -
-        (CASE WHEN (SELECT SUM(amount) FROM funds WHERE type IN (2, 3)) IS NULL THEN 0
-        ELSE (SELECT SUM(amount) FROM funds WHERE type IN (2, 3)) END) as funds,
-        (SELECT SUM(l.amount) FROM loans l 
-            WHERE l.dateadded::date = NOW()::date) as todayloan,
-        (SELECT SUM(l.amount) FROM loans l 
-            WHERE l.dateadded::date = (current_date - cast('1 day' as interval))::date) as yesterdayloan,
-        (SELECT SUM(l.amount) FROM loans l 
-            WHERE l.dateadded::date BETWEEN (current_date - cast(textcat(text (date_part('dow', now())::text), ' days') as interval))::date 
-            AND NOW()::date) as weekloan,
-        (SELECT SUM(p.amount) FROM payments p 
-            WHERE p.datepaid::date = NOW()::date) as todaypayment,
-        (SELECT SUM(p.amount) FROM payments p
-            WHERE p.datepaid::date = (current_date - cast('1 day' as interval))::date) as yesterdaypayment,
-        (SELECT SUM(p.amount) FROM payments p WHERE 
-            p.datepaid::date BETWEEN (current_date - cast(textcat(text (date_part('dow', now())::text), ' days') as interval))::date 
-            AND NOW()::date) as weekpayment,
-        (SELECT COUNT(c.id) FROM clients c 
-             WHERE c.dateadded::date = NOW()::date) as todayclient,
-        (SELECT COUNT(c.id) FROM clients c 
-             WHERE c.dateadded::date = (current_date - cast('1 day' as interval))::date) as yesterdayclient,
-        (SELECT COUNT(c.id) FROM clients c 
-             WHERE c.dateadded::date BETWEEN (current_date - cast(textcat(text (date_part('dow', now())::text), ' days') as interval))::date 
-                 AND NOW()::date) as weekclient`;
+        CASE WHEN (SELECT SUM(amount) FROM funds WHERE type IN (2, 3, 5, 10)) IS NULL THEN 0
+        ELSE (SELECT SUM(amount) FROM funds WHERE type IN (2, 3, 5, 10)) END as addedfunds,
+        CASE WHEN (SELECT SUM(amount) FROM funds WHERE type IN (1, 11)) IS NULL THEN 0
+        ELSE (SELECT SUM(amount) FROM funds WHERE type IN (1, 11)) END as withdrawnfunds,
+        (CASE WHEN (SELECT SUM(amount) FROM funds WHERE type IN (2, 3, 5, 10)) IS NULL THEN 0
+        ELSE (SELECT SUM(amount) FROM funds WHERE type IN (2, 3, 5, 10)) END) -
+        (CASE WHEN (SELECT SUM(amount) FROM funds WHERE type IN (1, 11)) IS NULL THEN 0
+        ELSE (SELECT SUM(amount) FROM funds WHERE type IN (1, 11)) END) as currentfunds`;
+        // ,
+        // (SELECT SUM(l.amount) FROM loans l 
+        //     WHERE l.dateadded::date = NOW()::date) as todayloan,
+        // (SELECT SUM(l.amount) FROM loans l 
+        //     WHERE l.dateadded::date = (current_date - cast('1 day' as interval))::date) as yesterdayloan,
+        // (SELECT SUM(l.amount) FROM loans l 
+        //     WHERE l.dateadded::date BETWEEN (current_date - cast(textcat(text (date_part('dow', now())::text), ' days') as interval))::date 
+        //     AND NOW()::date) as weekloan,
+        // (SELECT SUM(p.amount) FROM payments p 
+        //     WHERE p.datepaid::date = NOW()::date) as todaypayment,
+        // (SELECT SUM(p.amount) FROM payments p
+        //     WHERE p.datepaid::date = (current_date - cast('1 day' as interval))::date) as yesterdaypayment,
+        // (SELECT SUM(p.amount) FROM payments p WHERE 
+        //     p.datepaid::date BETWEEN (current_date - cast(textcat(text (date_part('dow', now())::text), ' days') as interval))::date 
+        //     AND NOW()::date) as weekpayment,
+        // (SELECT COUNT(c.id) FROM clients c 
+        //      WHERE c.dateadded::date = NOW()::date) as todayclient,
+        // (SELECT COUNT(c.id) FROM clients c 
+        //      WHERE c.dateadded::date = (current_date - cast('1 day' as interval))::date) as yesterdayclient,
+        // (SELECT COUNT(c.id) FROM clients c 
+        //      WHERE c.dateadded::date BETWEEN (current_date - cast(textcat(text (date_part('dow', now())::text), ' days') as interval))::date 
+        //          AND NOW()::date) as weekclient`;
         const params = [];
         
         query(res, sql, params);
@@ -320,43 +321,21 @@
 
     app.get('/funds/history', function(req, res){
         
-        const sql = `
-        SELECT
+        const sql = `SELECT 
         f.id,
-        CASE WHEN type = 1 THEN 'Funds added'
-            WHEN type = 2 THEN 'Expenses/Funds withdrawn'
-            WHEN type = 3 THEN 'Loan'
-            WHEN type = 4 THEN 'Payment'
-        ELSE 'Unknown'
-        END as description,
-        f.type,
-        f.loanid,
-        CASE WHEN type = 1 THEN (round(f.amount,2))::text
-            WHEN type = 2 THEN (round(f.amount,2))::text
-            WHEN type = 3 THEN (round((f.amount / 0.8),2))::text
-            WHEN type = 4 THEN (round((SELECT (l.amount) FROM loans l WHERE l.id = f.loanid),2))::text
-        END as amount,
-        CASE WHEN type = 1 THEN '-'
-            WHEN type = 2 THEN '-'
-            WHEN type = 3 THEN '20%'
-            WHEN type = 4 THEN '20%'
-        END as rate,
-        CASE WHEN type = 1 THEN '-'
-            WHEN type = 2 THEN '-'
-            WHEN type = 3 THEN (round(f.amount,2))::text
-            WHEN type = 4 THEN (round(((SELECT (l.amount) FROM loans l WHERE l.id = f.loanid) * 0.8),2))::text
-        END as netproceed,
-        f.paymentid,
-        CASE WHEN type = 1 THEN '-'
-            WHEN type = 2 THEN '-'
-            WHEN type = 3 THEN '-'
-            WHEN type = 4 THEN (round(f.amount,2))::text
-        END as paid,
-        f.remarks,
-        f.datemodified,
-        f.addedby
-        FROM funds f
-        ORDER BY f.id desc`;
+        f.dateadded,
+        f.amount,
+        (SELECT p.pawnticket FROM pledges p WHERE p.id = f.pledgeid) as pawnticket,
+        CASE WHEN type = 1 THEN 'Pledge'
+            WHEN type = 2 THEN 'Redeem'
+            WHEN type = 3 THEN 'Renew'
+            WHEN type = 5 THEN 'Sold'
+            WHEN type = 10 THEN 'Added Funds'
+            WHEN type = 11 THEN 'Withdrawn Funds'
+        END as type,
+        f.remarks
+        FROM funds f  
+        `;
         const params = [];
         
         query(res, sql, params);
@@ -417,10 +396,10 @@
         const params = [
             req.body.pawnticket,
             req.body.amount,
-            req.body.amtprepaid,
+            req.body.amountprepaid,
             req.body.penalty,
             req.body.remarks,
-            req.body.redeemedby
+            req.body.renewedby
         ];
 
         query(res, sql, params);
@@ -439,6 +418,7 @@
             req.body.pawnticket,
             req.body.soldto,
             req.body.amount,
+            req.body.remarks,
             req.body.soldby
         ];
 
