@@ -20,7 +20,7 @@ DECLARE
    v_id integer;
 BEGIN
 
-	IF NOT EXISTS (SELECT 'WARLETTE' FROM customer WHERE id = custid) AND custid IS NOT NULL THEN
+	IF NOT EXISTS (SELECT 'WARLETTE' FROM customers WHERE id = custid) AND custid IS NOT NULL THEN
 		-- Inserts the new customer record and retrieves the last inserted id
 		INSERT INTO customers(firstname, middlename, lastname, birthdate, contact, address, idpresented, email, remarks, dateadded, addedby)
 		VALUES (fname, mname, lname, bdate, ctact, addr, idprd, emailad, rmrks, NOW(), addby)

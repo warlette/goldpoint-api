@@ -12,7 +12,6 @@ DO $$BEGIN
             username character varying,
             password character varying,
             email character varying,
-            dateadded date,
             contact character varying,
             address character varying,
             dateadded date

@@ -21,7 +21,7 @@ DECLARE
    netproceed numeric;
 BEGIN
 
-	IF NOT EXISTS (SELECT 'WARLETTE' FROM customer WHERE id = custid) AND custid IS NOT NULL THEN
+	IF NOT EXISTS (SELECT 'WARLETTE' FROM customers WHERE id = custid) AND custid IS NOT NULL THEN
 		
 		v_id := -1;
 		

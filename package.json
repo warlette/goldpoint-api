@@ -25,7 +25,7 @@
     "pg": "*"
   },
   "devDependencies": {
-    "nodemon": "^1.99.99"
+    "nodemon": "2.0.20"
   },
   "binary": {
     "napi_versions": "0.1"

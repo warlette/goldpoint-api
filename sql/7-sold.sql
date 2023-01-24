@@ -46,7 +46,7 @@ BEGIN
     RETURN v_id;
 END;
 
-$BODY$;
+$BODY$
 
 LANGUAGE plpgsql;
 
